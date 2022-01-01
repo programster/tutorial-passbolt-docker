@@ -1,0 +1,61 @@
+version: "3"
+
+services:
+  app:
+    container_name: passbolt
+    image: passbolt/passbolt:3.4.0
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - db
+    volumes:
+      # This should be your certificates public certificate. This should
+      # be the "nginx style" where any certificiate authority chain files
+      # are included as well.
+      - $HOME/passbolt/ssl/certificate.crt:/etc/ssl/certs/certificate.crt:ro
+
+      # This should be the private key for your SSL certificate.
+      # Often called private.pem
+      - $HOME/passbolt/ssl/private.pem:/etc/ssl/certs/certificate.key:ro
+
+      # These should be the public and private keys of the GPG key the server should
+      # use.
+      - $HOME/passbolt/gpg/serverkey_private.asc:/etc/passbolt/gpg/serverkey_private.asc:ro
+      - $HOME/passbolt/gpg/serverkey.asc:/etc/passbolt/gpg/serverkey.asc:ro
+
+    environment:
+      - DATASOURCES_DEFAULT_HOST=db
+      - DATASOURCES_DEFAULT_PASSWORD=${DATABASE_PASSWORD}
+      - DATASOURCES_DEFAULT_USERNAME=${DATABASE_USERNAME}
+      - DATASOURCES_DEFAULT_DATABASE=${DATABASE_NAME}
+      - APP_FULL_BASE_URL=https://${FQDN}
+      - EMAIL_DEFAULT_FROM=${SMTP_EMAIL}
+      - EMAIL_TRANSPORT_DEFAULT_HOST=${SMTP_HOST}
+      - EMAIL_TRANSPORT_DEFAULT_PORT=${SMTP_PORT}
+      - EMAIL_TRANSPORT_DEFAULT_USERNAME=${SMTP_USERNAME}
+      - EMAIL_TRANSPORT_DEFAULT_PASSWORD=${SMTP_PASSWORD}
+      - SECURITY_SALT=${SECURITY_SALT}
+      - SERVER_KEY_EMAIL=${GPG_KEY_EMAIL}
+      - PASSBOLT_GPG_SERVER_KEY_FINGERPRINT=${GPG_KEY_FINGERPRINT}
+      - PASSBOLT_GPG_SERVER_KEY_PUBLIC=/etc/passbolt/gpg/serverkey.asc
+      - PASSBOLT_GPG_SERVER_KEY_PRIVATE=/etc/passbolt/gpg/serverkey_private.asc
+
+
+  db:
+    image: mariadb:10.7
+    container_name: db
+    restart: always
+    volumes:
+      - passbolt-db-data:/var/lib/mysql
+    environment:
+      - MARIADB_RANDOM_ROOT_PASSWORD=1
+      - MARIADB_DATABASE=${DATABASE_NAME}
+      - MARIADB_USER=${DATABASE_USERNAME}
+      - MARIADB_PASSWORD=${DATABASE_PASSWORD}
+
+
+volumes:
+  passbolt-db-data:
+    driver: local
