@@ -112,6 +112,24 @@ sudo chown $USER:33 serverkey* && \
 the files in order to be able to work.
 
 
+### Start the Database
+We need to "warm up" the database and give it a chance to set up the first time
+we deploy. We can do this by deploying just the database service on its own 
+with:
+
+```bash
+docker-compose up db
+```
+
+### Start Passbolt
+After the database has finished setting up (you stop seeing lots of console 
+output), then you can deploy the Passbolt service with:
+
+```bash
+docker-compose up app
+```
+
+
 ### Import GPG Key
 Now we need to tell passbolt to import the GPG key that we injected through the
 use of Docker volumes. We do this by running the following command:
@@ -129,28 +147,6 @@ gpg: Total number processed: 1
 gpg:              unchanged: 1
 ```
 
-After this,  you can change the permissions back on the GPG key files:
-
-```bash
-sudo chmod 640 serverkey*
-```
-
-### Start the Database
-We need to "warm up" the database and give it a chance to set up the first time
-we deploy. We can do this by deploying just the database service on its own 
-with:
-
-```bash
-docker-compose up db
-```
-
-### Start Passbolt
-After the database has finished setting up (you stop seeing lots of console 
-output), then you can deploy the Passbolt service with:
-
-```bash
-docker-compose up app
-```
 
 
 ### Create Initial User
