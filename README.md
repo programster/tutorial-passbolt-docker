@@ -130,25 +130,6 @@ docker-compose up app
 ```
 
 
-### Import GPG Key
-Now we need to tell passbolt to import the GPG key that we injected through the
-use of Docker volumes. We do this by running the following command:
-
-```bash
-docker exec passbolt \
-  su -m --command "gpg --home /var/lib/passbolt/.gnupg --import /etc/passbolt/gpg/serverkey_private.asc" \
-  -s /bin/sh www-data
-```
-
-You should get a message like the following:
-```
-gpg: key F0309B0CF553E5D6: "passbolt-admin (Passbolt GPG key) <support@mydomain.com>" not changed
-gpg: Total number processed: 1
-gpg:              unchanged: 1
-```
-
-
-
 ### Create Initial User
 We need to create our initial administrative user account that we will
 be able to log into Passbolt with, and then use to send invites to other users.
