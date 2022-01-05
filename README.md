@@ -52,19 +52,23 @@ This may or may not be performed on the Passbolt server itself. It can be
 faster to generate these off-server if you just deployed a VPS and it doesn't
 have much/any entropy yet.
 
-```bash
-gpg --full-generate-key
-```
+Run the following, being sure to change the "Name-Real" and "Name-Email" 
+fields as appropriate. Do not change any of the other values.
 
-When prompted, enter the following answers:
-- `(1) RSA and RSA (default)`
-- `2048` for key length
-- `0` for does not expire
-- Enter your real name, or something generic like `support` or `passbolt-admin`
-- Enter an email address for the key. E.g. `support@passbolt.mydomin.com`
-- `Passbolt GPG key` for the comment.
-- `O` to confirm that you are happy with the details.
-- Make sure to **not** set a passphrase.
+```bash
+gpg2 --batch --gen-key <<EOF
+%no-protection
+Key-Type:1
+Key-Length:2048
+Subkey-Type:1
+Subkey-Length:2048
+Name-Real: Passbolt User
+Name-Email: support@mydomain.com
+Expire-Date:0
+EOF
+```
+This will create a 2048 bit key that doesn't expire and has no passphrase. 
+This is because passbolt requires this.
 
 When that has been completed, you should see details of the generated key. This 
 includes the keys fingerprint. Be sure to copy this fingerprint for later.
@@ -230,3 +234,4 @@ checking online that this is even possible to do safely first.
 ## References
 * [Dockerhub - passbolt/passbolt](https://hub.docker.com/r/passbolt/passbolt/)
 * [Community.passbolt.com - Firefox 85.0.2 (64-Bit) - Add-on is not recognized](https://community.passbolt.com/t/firefox-85-0-2-64-bit-add-on-is-not-recognized/3849/3)
+* [SuperUser- gpg remove passphrase](https://superuser.com/questions/1360324/gpg-remove-passphrase)
